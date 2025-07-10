@@ -25,10 +25,10 @@ public class Usuario {
 
     private String nombre;
 
-    @Column(unique = true)
+    @Column(unique = true, name = "email")
     private String email;
-
-    private String contraseñaHash;
+    @Column(name = "contraseña_hash")
+    private String password;
 
     private LocalDateTime fechaRegistro = LocalDateTime.now();
 }

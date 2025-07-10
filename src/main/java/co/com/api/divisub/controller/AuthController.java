@@ -4,6 +4,7 @@ import co.com.api.divisub.request.LoginRequest;
 import co.com.api.divisub.response.AuthResponse;
 import co.com.api.divisub.security.JwtUtil;
 import co.com.api.divisub.security.UserDetailsServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
+@Slf4j
 public class AuthController {
 
     @Autowired
@@ -29,13 +31,17 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+            final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
+            final String jwt = jwtUtil.generateToken(userDetails);
+            return ResponseEntity.ok(new AuthResponse(jwt));
+        } catch (Exception e) {
+            log.error("Error during authentication: {}", e.getMessage());
+            return ResponseEntity.status(401).body("Credenciales inválidas");
+        }
 
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(request.getEmail());
-        final String jwt = jwtUtil.generateToken(userDetails);
-
-        return ResponseEntity.ok(new AuthResponse(jwt));
     }
 }
