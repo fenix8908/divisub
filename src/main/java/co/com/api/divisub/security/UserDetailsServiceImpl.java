@@ -7,8 +7,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -17,16 +18,16 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userEmail) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con el email: " + userEmail));
+        return construirUserDetail(usuario);
+    }
 
-        Usuario usuario = usuarioRepository.findByEmail(userEmail);
-        if (usuario == null) {
-            throw new UsernameNotFoundException("Usuario no encontrado con el email: " + userEmail);
-        }
-        // Usuario simulado
+    public UserDetails construirUserDetail(Usuario usuario) {
         return User.builder()
                 .username(usuario.getEmail())
                 .password(usuario.getPassword())
-                .roles("USER", "ADMIN") // Asignar roles según sea necesario
+                .roles("USER", "ADMIN") // Asigna roles dinámicamente si es necesario
                 .build();
     }
 }

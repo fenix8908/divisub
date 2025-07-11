@@ -29,6 +29,11 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+	// https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api
+	implementation("jakarta.validation:jakarta.validation-api:3.1.1")
+
+	implementation ("org.hibernate.validator:hibernate-validator:8.0.1.Final")
+	implementation ("org.glassfish:jakarta.el:5.0.0-M1")
 }
 
 tasks.withType<Test> {
